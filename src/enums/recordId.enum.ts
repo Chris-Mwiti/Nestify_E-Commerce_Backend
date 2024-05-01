@@ -1,0 +1,16 @@
+export enum ERecordPrefix {
+    USER = "USER",
+    PRODUCTS = "PRODUCTS",
+    INVENTORY = "INVENTORY",
+    ASSET = "ASSET",
+    SALE = "SALE",
+    REFILL = "REFILL",
+    ORDER = "ORDER",
+    ITEM = "ITEM",
+    PAYM = "PAYM",
+    INVOICE = "INVOICE",
+    CATEGORY = "CATEGORY",
+    DISCOUNTS = "DISCOUNTS",
+    NOTIFICATIONS = "NOTIFICATIONS",
+    SUPPLIER = "SUPPLIER"
+}
