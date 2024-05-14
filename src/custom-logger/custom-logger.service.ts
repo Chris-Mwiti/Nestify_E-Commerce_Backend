@@ -9,7 +9,7 @@ export class CustomLoggerService implements LoggerService {
     private logger:winston.Logger;
     constructor(){
         this.logger = winston.createLogger({
-            level: "info",
+            level: "debug",
             format: combine(
                 label(),
                 timestamp(),
@@ -36,7 +36,7 @@ export class CustomLoggerService implements LoggerService {
 
 
     private pathRedirector(pathName:string) {
-        const newPath = path.resolve(__dirname, 'logs', pathName);
+        const newPath = path.join(__dirname, '../logs', pathName);
         return newPath;
     }
 

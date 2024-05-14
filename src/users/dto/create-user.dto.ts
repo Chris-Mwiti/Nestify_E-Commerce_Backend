@@ -12,15 +12,14 @@ export class CreateUserDto {
   @IsEmail()
   email: string;
 
-  @Min(5, {
-    message(validationArguments) {
-      return (
-        'Your password is too short. We expected it to be atleast' +
-        validationArguments.constraints[1]
-      );
-    },
-  })
-  
+  // @Min(5, {
+  //   message(validationArguments) {
+  //     return (
+  //       'Your password is too short. We expected it to be atleast' +
+  //       validationArguments.constraints[0]
+  //     );
+  //   },
+  // })
   @IsString()
   @IsOptional()
   password: string;

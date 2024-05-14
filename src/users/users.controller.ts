@@ -1,40 +1,58 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, ValidationPipe, InternalServerErrorException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  ParseIntPipe,
+  ValidationPipe,
+  InternalServerErrorException,
+  UseGuards,
+  Req,
+  UseInterceptors,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import tryCatcHelper from 'src/utils/helpers/trycatchHelper.util.helper';
-import { User } from './entities/user.entity';
+import { AuthGuard } from 'src/auth/auth-guard/auth-guard.guard';
+import { Request } from 'express';
+import { TokenRegeneratorInterceptor } from 'src/auth/auth-interceptors/tokenRegenerator.interceptor';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+  ) {}
 
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
     try {
-      return this.usersService.create(createUserDto);
-    }catch(error){
-      throw new InternalServerErrorException()
+      return this.usersService.createUser(createUserDto);
+    } catch (error) {
+      throw new InternalServerErrorException();
     }
   }
 
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  @UseGuards(AuthGuard)
+  findAll(@Req() req: Request) {
+    return this.usersService.findAllUsers();
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.usersService.findOne(id);
+  findOne(@Param('id') id: string) {
+    return this.usersService.findUserById(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+    return this.usersService.update(id, updateUserDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+    return this.usersService.removeUser(id);
   }
 }
