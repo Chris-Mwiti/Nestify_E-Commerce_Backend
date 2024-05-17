@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { Observable, catchError, tap } from 'rxjs';
-import { CustomLoggerService } from 'src/custom-logger/custom-logger.service';
+import { CustomLoggerService } from 'src/utils/custom-logger/custom-logger.service';
 import { format } from 'date-fns';
 
 @Injectable()
@@ -26,7 +26,7 @@ export class RequestLoggerInterceptor implements NestInterceptor {
         request.method
       }`,
     );
-    
-    return next.handle()
+
+    return next.handle();
   }
 }

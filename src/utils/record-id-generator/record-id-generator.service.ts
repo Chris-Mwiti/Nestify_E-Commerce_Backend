@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import * as crypto from 'node:crypto';
-import { TRecordIdsPrefixes } from 'src/types/recordId.types';
+import { TRecordIdsPrefixes } from 'src/utils/types/recordId.types';
 
 
 @Injectable()

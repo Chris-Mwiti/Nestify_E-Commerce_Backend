@@ -1,4 +1,4 @@
-import { TimeStamp } from "src/entities/timestamp.entities";
+import { TimeStamp } from "src/utils/entities/timestamp.entities";
 import { Column, CreateDateColumn, Entity, PrimaryColumn, UpdateDateColumn } from "typeorm";
 
 export enum UserStatus {

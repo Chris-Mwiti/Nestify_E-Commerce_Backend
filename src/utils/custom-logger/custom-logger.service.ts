@@ -4,9 +4,15 @@ import * as path from 'path';
 
 const { combine, timestamp, label, printf, colorize } = winston.format
 
+/**
+ * @todo
+ * 1. Research on how to add class constructor name as a label to the logger
+ * 2. Research on how to add transporter that will store logs in an external db
+ */
 @Injectable()
 export class CustomLoggerService implements LoggerService {
     private logger:winston.Logger;
+    private objectName:string;
     constructor(){
         this.logger = winston.createLogger({
             level: "debug",

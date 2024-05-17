@@ -7,7 +7,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { TAuthDto } from '../dto/auth.dto';
-import { CustomLoggerService } from 'src/custom-logger/custom-logger.service';
+import { CustomLoggerService } from 'src/utils/custom-logger/custom-logger.service';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -39,16 +39,16 @@ export class AuthGuard implements CanActivate {
       );
       if (!canActivate) return Promise.resolve(false);
       return Promise.resolve(true);
-
     } else if (!accessToken && refreshToken) {
+      /**
+       * @logger
+       */
       this.loggerService.log('Access token revalidation');
       const canActivate = await this.authRefreshToken(refreshToken, request);
       if (!canActivate) return Promise.resolve(false);
-
     } else if (accessToken && !refreshToken) {
       const canActivate = await this.authAccessToken(accessToken, request);
       if (!canActivate) return Promise.resolve(false);
-
     } else {
       return Promise.resolve(false);
     }
@@ -104,6 +104,7 @@ export class AuthGuard implements CanActivate {
 
       if (isAccessTokenValid && isRefreshTokenValid) {
         const authDecodedDto = this.jwtService.decode<TAuthDto>(accessToken);
+        this.loggerService.log(authDecodedDto);
         //Attach the user object to the request object
         request['user'] = authDecodedDto;
         return Promise.resolve(true);

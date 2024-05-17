@@ -7,7 +7,7 @@ import {
 import { Request } from 'express';
 import { Observable, map } from 'rxjs';
 import { AuthService } from '../auth.service';
-import { CustomLoggerService } from 'src/custom-logger/custom-logger.service';
+import { CustomLoggerService } from 'src/utils/custom-logger/custom-logger.service';
 
 @Injectable()
 export class TokenRegeneratorInterceptor implements NestInterceptor {
@@ -21,10 +21,10 @@ export class TokenRegeneratorInterceptor implements NestInterceptor {
     const decodeRefreshToken = request['decodedRefreshToken'];
 
     if (decodedAccessToken) {
-        /**
-         * @logger warn
-         */
-      this.loggerService.warn("Regenerating refresh token...")
+      /**
+       * @logger warn
+       */
+      this.loggerService.warn('Regenerating refresh token...');
       const refreshToken =
         await this.authService.createAccessToken(decodedAccessToken);
 
@@ -35,13 +35,13 @@ export class TokenRegeneratorInterceptor implements NestInterceptor {
         })),
       );
     } else if (decodeRefreshToken) {
-        /**
-         * @logger warn
-         */
-     this.loggerService.warn("Regenerating access token...");
+      /**
+       * @logger warn
+       */
+      this.loggerService.warn('Regenerating access token...');
       const accessToken =
         await this.authService.createAccessToken(decodeRefreshToken);
-        this.loggerService.warn(accessToken);
+      this.loggerService.warn(accessToken);
 
       return next.handle().pipe(
         map((data) => ({
@@ -50,10 +50,10 @@ export class TokenRegeneratorInterceptor implements NestInterceptor {
         })),
       );
     } else {
-        /**
-         * @logger warn
-         */
-        this.loggerService.warn("Next handle has been called...")
+      /**
+       * @logger warn
+       */
+      this.loggerService.warn('Next handle has been called...');
       return next.handle();
     }
   }

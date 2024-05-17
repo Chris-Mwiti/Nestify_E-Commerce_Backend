@@ -9,12 +9,11 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Observable, catchError, throwError } from 'rxjs';
-import { CustomLoggerService } from 'src/custom-logger/custom-logger.service';
+import { CustomLoggerService } from 'src/utils/custom-logger/custom-logger.service';
 
 @Injectable()
 export class ErrorInterceptor implements NestInterceptor {
-
-  constructor(private readonly loggerService:CustomLoggerService){}
+  constructor(private readonly loggerService: CustomLoggerService) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
@@ -42,7 +41,9 @@ export class ErrorInterceptor implements NestInterceptor {
            * @logger
            */
           this.loggerService.error(err.message);
-          return throwError(() => new InternalServerErrorException(err.message));
+          return throwError(
+            () => new InternalServerErrorException(err.message),
+          );
         }
       }),
     );

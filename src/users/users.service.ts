@@ -1,10 +1,7 @@
 import {
   BadRequestException,
-  Body,
   Inject,
   Injectable,
-  InternalServerErrorException,
-  OnModuleInit,
   forwardRef,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -12,11 +9,9 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { Repository } from 'typeorm';
 import { TUser, User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { RecordIdGeneratorService } from 'src/record-id-generator/record-id-generator.service';
-import { CustomLoggerService } from 'src/custom-logger/custom-logger.service';
+import { RecordIdGeneratorService } from 'src/utils/record-id-generator/record-id-generator.service';
+import { CustomLoggerService } from 'src/utils/custom-logger/custom-logger.service';
 import { AuthService } from 'src/auth/auth.service';
-import { ModuleRef } from '@nestjs/core';
-import { SALT_ROUNDS } from 'src/auth/constants/saltrounds.constants';
 
 /**
  * @todo:{
@@ -112,18 +107,18 @@ export class UsersService {
       updateUserDto,
     );
     if (!updatedResult) throw new BadRequestException('User does not exist');
-    return updatedResult
+    return updatedResult;
   }
 
   async removeUser(id: string) {
-   this.loggerService.log('Deleting user...', {
-     label: UsersService.name,
-   });
-   const removeResult = await this.userRepository.delete({
-     userId: id,
-   });
-   if (!removeResult) throw new BadRequestException('User does exist');
-   return removeResult
+    this.loggerService.log('Deleting user...', {
+      label: UsersService.name,
+    });
+    const removeResult = await this.userRepository.delete({
+      userId: id,
+    });
+    if (!removeResult) throw new BadRequestException('User does exist');
+    return removeResult;
   }
 
   private async existsByEmail(email: string) {

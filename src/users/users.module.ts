@@ -4,8 +4,8 @@ import { UsersController } from './users.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { APP_PIPE } from '@nestjs/core';
-import { RecordIdGeneratorModule } from 'src/record-id-generator/record-id-generator.module';
-import { CustomLoggerModule } from 'src/custom-logger/custom-logger.module';
+import { RecordIdGeneratorModule } from 'src/utils/record-id-generator/record-id-generator.module';
+import { CustomLoggerModule } from 'src/utils/custom-logger/custom-logger.module';
 import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
@@ -13,7 +13,7 @@ import { AuthModule } from 'src/auth/auth.module';
     TypeOrmModule.forFeature([User]),
     RecordIdGeneratorModule,
     CustomLoggerModule,
-    forwardRef(() => AuthModule)
+    forwardRef(() => AuthModule),
   ],
   controllers: [UsersController],
   providers: [

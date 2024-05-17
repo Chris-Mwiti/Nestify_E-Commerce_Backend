@@ -4,13 +4,19 @@ import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './users/entities/user.entity';
-import { RecordIdGeneratorModule } from './record-id-generator/record-id-generator.module';
+import { RecordIdGeneratorModule } from './utils/record-id-generator/record-id-generator.module';
 import { AuthModule } from './auth/auth.module';
-import { CustomLoggerModule } from './custom-logger/custom-logger.module';
+import { CustomLoggerModule } from './utils/custom-logger/custom-logger.module';
 import { ConfigModule } from '@nestjs/config';
-import { APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { RequestLoggerInterceptor } from './interceptors/requestogger.interceptor';
 import { DevtoolsModule } from '@nestjs/devtools-integration';
+import { ErrorInterceptor } from './interceptors/error/error.interceptor';
+import { CategoryModule } from './category/category.module';
+import { ProductsModule } from './products/products.module';
+import { Category } from './category/entities/category.entity';
+import { Product } from './products/entities/product.entity';
+import { AllFilter } from './utils/ExceptionFilters/all/all.filter';
 
 @Module({
   imports: [
@@ -26,7 +32,7 @@ import { DevtoolsModule } from '@nestjs/devtools-integration';
       username: 'root',
       password: '',
       database: 'ecommerce_db',
-      entities: [User],
+      entities: [User,Category,Product],
       synchronize: true,
       logging: true,
     }),
@@ -34,16 +40,22 @@ import { DevtoolsModule } from '@nestjs/devtools-integration';
       isGlobal: true,
     }),
     DevtoolsModule.register({
-      http: process.env.NODE_ENV !== 'production'
-    })
+      http: process.env.NODE_ENV !== 'production',
+    }),
+    CategoryModule,
+    ProductsModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
     {
+      provide: APP_FILTER,
+      useClass: AllFilter
+    },
+    {
       provide: APP_INTERCEPTOR,
       useClass: RequestLoggerInterceptor,
-    }
+    },
   ],
 })
 export class AppModule {}
