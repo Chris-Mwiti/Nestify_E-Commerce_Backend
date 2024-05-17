@@ -1,6 +1,7 @@
 import { Category } from 'src/category/entities/category.entity';
 import { TimeStamp } from 'src/utils/entities/timestamp.entities';
-import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryColumn, Relation } from 'typeorm';
+import { DateTransformer } from './transformers/date.transfomer';
 
 export enum ProductStockStatus {
   IN_STOCK = 'in_stock',
@@ -35,7 +36,7 @@ export class Product extends TimeStamp {
   originalPrice: number;
 
   @Column()
-  lowLevelAlert: number;
+lowLevelAlert: number;
 
   @Column({
     type: 'boolean',
@@ -46,6 +47,7 @@ export class Product extends TimeStamp {
   @Column({
     type: 'date',
     nullable: true,
+    transformer: new DateTransformer()
   })
   expireDate: Date;
 
@@ -88,5 +90,5 @@ export class Product extends TimeStamp {
    */
 
   @ManyToOne((type) => Category, (category) => category.product)
-  category: Category;
+  category: Relation<Category>;
 }

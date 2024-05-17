@@ -17,6 +17,7 @@ import { ProductsModule } from './products/products.module';
 import { Category } from './category/entities/category.entity';
 import { Product } from './products/entities/product.entity';
 import { AllFilter } from './utils/ExceptionFilters/all/all.filter';
+import { InventoryModule } from './inventory/inventory.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { AllFilter } from './utils/ExceptionFilters/all/all.filter';
     }),
     CategoryModule,
     ProductsModule,
+    InventoryModule,
   ],
   controllers: [AppController],
   providers: [

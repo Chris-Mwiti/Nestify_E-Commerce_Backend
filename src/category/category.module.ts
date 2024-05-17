@@ -15,5 +15,6 @@ import { TreesController } from './category/trees/trees.controller';
   ],
   controllers: [TreesController, CategoryController],
   providers: [CategoryService],
+  exports: [CategoryService]
 })
 export class CategoryModule {}
