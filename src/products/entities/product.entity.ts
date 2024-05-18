@@ -1,7 +1,8 @@
 import { Category } from 'src/category/entities/category.entity';
 import { TimeStamp } from 'src/utils/entities/timestamp.entities';
-import { Column, Entity, ManyToOne, PrimaryColumn, Relation } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryColumn, Relation } from 'typeorm';
 import { DateTransformer } from './transformers/date.transfomer';
+import { Inventory } from 'src/inventory/entities/inventory.entity';
 
 export enum ProductStockStatus {
   IN_STOCK = 'in_stock',
@@ -91,4 +92,8 @@ lowLevelAlert: number;
 
   @ManyToOne((type) => Category, (category) => category.product)
   category: Relation<Category>;
+
+  @OneToOne((type) => Inventory, (inventory) => inventory.product, {onUpdate: 'CASCADE'})
+  @JoinColumn()
+  inventory: Relation<Inventory>;
 }

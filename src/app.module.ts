@@ -18,6 +18,7 @@ import { Category } from './category/entities/category.entity';
 import { Product } from './products/entities/product.entity';
 import { AllFilter } from './utils/ExceptionFilters/all/all.filter';
 import { InventoryModule } from './inventory/inventory.module';
+import { Inventory } from './inventory/entities/inventory.entity';
 
 @Module({
   imports: [
@@ -33,7 +34,7 @@ import { InventoryModule } from './inventory/inventory.module';
       username: 'root',
       password: '',
       database: 'ecommerce_db',
-      entities: [User,Category,Product],
+      entities: [User,Category,Product,Inventory],
       synchronize: true,
       logging: true,
     }),

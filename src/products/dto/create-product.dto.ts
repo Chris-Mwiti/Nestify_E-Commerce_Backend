@@ -54,6 +54,11 @@ export class CreateProductDto {
   @IsOptional()
   productBarCode: number;
 
+  @Min(0)
+  @IsNumber()
+  @IsNotEmpty()
+  quantity:number;
+
   @StartsWith(ERecordPrefix.CATEGORY)
   @IsString()
   @IsNotEmpty()
