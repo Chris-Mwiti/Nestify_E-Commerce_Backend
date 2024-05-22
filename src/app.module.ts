@@ -11,7 +11,6 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { RequestLoggerInterceptor } from './interceptors/requestogger.interceptor';
 import { DevtoolsModule } from '@nestjs/devtools-integration';
-import { ErrorInterceptor } from './interceptors/error/error.interceptor';
 import { CategoryModule } from './category/category.module';
 import { ProductsModule } from './products/products.module';
 import { Category } from './category/entities/category.entity';
@@ -19,6 +18,7 @@ import { Product } from './products/entities/product.entity';
 import { AllFilter } from './utils/ExceptionFilters/all/all.filter';
 import { InventoryModule } from './inventory/inventory.module';
 import { Inventory } from './inventory/entities/inventory.entity';
+import { ProductMetadata } from './products/products-metadata/entities/product-metadata.entity';
 
 @Module({
   imports: [
@@ -29,13 +29,13 @@ import { Inventory } from './inventory/entities/inventory.entity';
 
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'localhost',
+      host: 'localhost',   
       port: 3306,
       username: 'root',
       password: '',
       database: 'ecommerce_db',
-      entities: [User,Category,Product,Inventory],
-      synchronize: true,
+      entities: [User,Category,Product,Inventory, ProductMetadata],
+      synchronize: false,
       logging: true,
     }),
     ConfigModule.forRoot({

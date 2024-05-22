@@ -1,9 +1,11 @@
+import { PartialType } from "@nestjs/mapped-types";
 import { IsBoolean, IsDateString, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from "class-validator";
 import { ERecordPrefix } from "src/enums/recordId.enum";
 import { IsBuffer } from "src/utils/validators/buffer.validator";
 import { StartsWith } from "src/utils/validators/starts-with.validator";
+import { CreateProductMetaData } from "../products-metadata/dto/create-product-metadata.dto";
 
-export class CreateProductDto {
+export class CreateProductDto extends PartialType(CreateProductMetaData) {
   @IsString()
   @IsNotEmpty()
   productName: string;

@@ -3,6 +3,7 @@ import { TimeStamp } from 'src/utils/entities/timestamp.entities';
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryColumn, Relation } from 'typeorm';
 import { DateTransformer } from './transformers/date.transfomer';
 import { Inventory } from 'src/inventory/entities/inventory.entity';
+import { ProductMetadata } from '../products-metadata/entities/product-metadata.entity';
 
 export enum ProductStockStatus {
   IN_STOCK = 'in_stock',
@@ -93,7 +94,11 @@ lowLevelAlert: number;
   @ManyToOne((type) => Category, (category) => category.product)
   category: Relation<Category>;
 
-  @OneToOne((type) => Inventory, (inventory) => inventory.product, {onUpdate: 'CASCADE'})
+  @OneToOne((type) => Inventory, (inventory) => inventory.product, {onUpdate: 'CASCADE', onDelete: "CASCADE"})
   @JoinColumn()
   inventory: Relation<Inventory>;
+
+  @OneToOne(type => ProductMetadata, (productMetadata) => productMetadata.product, {onUpdate: "CASCADE", onDelete: "CASCADE"})
+  @JoinColumn()
+  metadata:Relation<ProductMetadata>
 }

@@ -27,6 +27,12 @@ export class CategoryService {
        */
       this.loggerService.log('Creating category...');
 
+      //Check if a category exists
+      const doesCategoryExist = await this.categoryRepository.findOneBy({
+        categoryName: createCategoryDto["categoryName"]
+      })
+      if(doesCategoryExist) throw new BadRequestException("Category already exists");
+
       const categoryId = this.recordIdService.generate('CATEGORY');
       let categoryObj = this.categoryRepository.create(createCategoryDto);
       categoryObj.categoryId = categoryId;
@@ -40,6 +46,7 @@ export class CategoryService {
         });
         categoryObj.parent = parentCategory;
       }
+
       const createResponse = await this.categoryRepository.save(categoryObj);
       return createResponse;
     } catch (createErr) {
@@ -47,6 +54,8 @@ export class CategoryService {
        * @logger
        */
       this.loggerService.error(createErr.message);
+
+      if(createErr instanceof BadRequestException) throw createErr
       throw new InternalServerErrorException('Error while creating category');
     }
   }
@@ -212,7 +221,7 @@ export class CategoryService {
 
   async findCategoryDescendants(categoryId: string, formatTree?: boolean) {
     try {
-      const categoryDescendants = await this.categoryRepository.find({
+      const categoryDescendants = await this.categoryRepository.findOne({
         where: {
           categoryId: categoryId,
         },
@@ -226,9 +235,7 @@ export class CategoryService {
         return categoryDescendants;
       }
 
-      const flatCategoryDescendants = categoryDescendants.flatMap(
-        (children) => children.categoryName,
-      );
+      const flatCategoryDescendants = categoryDescendants.children.map(category => category.categoryName);
       return flatCategoryDescendants;
     } catch (fetchErr) {
       /**@logger */
@@ -241,7 +248,7 @@ export class CategoryService {
 
   async findCategoryAncestors(categoryId: string, formatTree?: boolean) {
     try {
-      const categoryAncestors = await this.categoryRepository.find({
+      const categoryAncestors = await this.categoryRepository.findOne({
         where: {
           categoryId: categoryId,
         },
@@ -251,12 +258,13 @@ export class CategoryService {
 
       if (formatTree) return categoryAncestors;
 
-      return categoryAncestors.flatMap((parent) => parent.categoryName);
+      if(!categoryAncestors.parent) return {};
+      return categoryAncestors.parent.categoryName;
     } catch (fetchErr) {
       /**@logger */
       this.loggerService.error(fetchErr.message);
       throw new InternalServerErrorException(
-        'Error while fetching descendants tree',
+        'Error while fetching ancestors tree',
       );
     }
   }

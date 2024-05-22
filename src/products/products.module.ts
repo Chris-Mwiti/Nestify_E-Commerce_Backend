@@ -8,6 +8,7 @@ import { RecordIdGeneratorModule } from 'src/utils/record-id-generator/record-id
 import { CategoryModule } from 'src/category/category.module';
 import { Inventory } from 'src/inventory/entities/inventory.entity';
 import { InventoryModule } from 'src/inventory/inventory.module';
+import { ProductsMetadataModule } from './products-metadata/products-metadata.module';
 
 @Module({
   imports: [
@@ -15,7 +16,8 @@ import { InventoryModule } from 'src/inventory/inventory.module';
     CustomLoggerModule,
     RecordIdGeneratorModule,
     CategoryModule,
-    forwardRef(() => InventoryModule)
+    forwardRef(() => InventoryModule),
+    forwardRef(() => ProductsMetadataModule)
   ],
   controllers: [ProductsController],
   providers: [ProductsService],

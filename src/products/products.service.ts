@@ -13,11 +13,11 @@ import { Product } from './entities/product.entity';
 import { Repository } from 'typeorm';
 import { RecordIdGeneratorService } from 'src/utils/record-id-generator/record-id-generator.service';
 import { CategoryService } from 'src/category/category.service';
-import { Inventory } from 'src/inventory/entities/inventory.entity';
-import { Category } from 'src/category/entities/category.entity';
 import { InventoryService } from 'src/inventory/inventory.service';
 import { plainToInstance } from 'class-transformer';
 import { CreateInventoryDto } from 'src/inventory/dto/create-inventory.dto';
+import { ProductMetadataService } from './products-metadata/product-metadata.service';
+import { UpdateProductMetaData } from './products-metadata/dto/update-product-metadata.dto';
 
 @Injectable()
 export class ProductsService {
@@ -28,7 +28,9 @@ export class ProductsService {
     private readonly recordId: RecordIdGeneratorService,
     private readonly categoryService: CategoryService,
     @Inject(forwardRef(() => InventoryService))
-    private readonly inventoryService:InventoryService
+    private readonly inventoryService:InventoryService,
+    @Inject(forwardRef(() => ProductMetadataService))
+    private readonly productMetadataService:ProductMetadataService
   ) {}
   async createProduct(createProductDto: CreateProductDto) {
     try {
@@ -51,6 +53,18 @@ export class ProductsService {
       const inventory = await this.inventoryService.createInventory(inventoryInstance);
       productObj.inventory = inventory
 
+
+      //Metadata Creation
+      if(createProductDto["sizes"] || createProductDto["color"] || createProductDto["imageUrl"]){
+        const metadataObj = {
+          sizes: createProductDto["sizes"],
+          color: createProductDto["color"],
+          imageUrl: createProductDto["imageUrl"]
+        }
+        const productMetadata = await this.productMetadataService.createMetadata(metadataObj);
+        productObj.metadata = productMetadata
+      }
+
       return await this.productRepsitory.save(productObj);
     } catch (createErr) {
       /**@logger */
@@ -66,6 +80,8 @@ export class ProductsService {
       const products = await this.productRepsitory.find({
         relations: {
           category: true,
+          metadata: true,
+          inventory: true
         },
       });
       return products;
@@ -119,6 +135,18 @@ export class ProductsService {
           );
       }
 
+      //Updates the product metadata
+      if(updateProductDto["sizes"] || updateProductDto["color"] || updateProductDto["imageUrl"]){
+        const updateMetadataObj:UpdateProductMetaData = {
+          productId: productToUpdated.productId,
+          sizes: updateProductDto["sizes"],
+          color: updateProductDto["color"],
+          imageUrl: updateProductDto["imageUrl"]
+        }
+        await this.productMetadataService.updateProductMetadata(updateMetadataObj);
+
+      }
+
       const { categoryId, ...dto } = updateProductDto;
       const newUpdateObj = { ...productToUpdated, ...dto };
       return await this.productRepsitory.save(newUpdateObj);
@@ -145,5 +173,9 @@ export class ProductsService {
       this.loggerService.error(deleteErr.message);
       throw new InternalServerErrorException('Error while deleting product');
     }
+  }
+
+  async saveProduct(product:Product){
+    return this.productRepsitory.save(product);
   }
 }
