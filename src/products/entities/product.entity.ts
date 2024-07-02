@@ -1,9 +1,11 @@
 import { Category } from 'src/category/entities/category.entity';
 import { TimeStamp } from 'src/utils/entities/timestamp.entities';
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryColumn, Relation } from 'typeorm';
+import {  Column, DeleteDateColumn, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryColumn, Relation } from 'typeorm';
 import { DateTransformer } from './transformers/date.transfomer';
 import { Inventory } from 'src/inventory/entities/inventory.entity';
 import { ProductMetadata } from '../products-metadata/entities/product-metadata.entity';
+import OrderItems from 'src/orders/order-items/entities/order-items.entities';
+import { Collection } from 'src/collections/entities/collection.entity';
 
 export enum ProductStockStatus {
   IN_STOCK = 'in_stock',
@@ -87,6 +89,9 @@ lowLevelAlert: number;
   })
   productBarCode: number;
 
+  @DeleteDateColumn()
+  deletedAt:Date
+
   /**
    * @relations
    */
@@ -101,4 +106,10 @@ lowLevelAlert: number;
   @OneToOne(type => ProductMetadata, (productMetadata) => productMetadata.product, {onUpdate: "CASCADE", onDelete: "CASCADE"})
   @JoinColumn()
   metadata:Relation<ProductMetadata>
+
+  @OneToMany(type => OrderItems, (orderItems) => orderItems.product, {cascade: true})
+  items:Relation<OrderItems[]>
+
+  @ManyToMany((type) => Collection, (collection) => collection.products)
+  collections:Relation<Collection[]>
 }

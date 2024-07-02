@@ -10,7 +10,7 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { CustomLoggerService } from 'src/utils/custom-logger/custom-logger.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
-import { Repository } from 'typeorm';
+import { FindManyOptions, In, Repository } from 'typeorm';
 import { RecordIdGeneratorService } from 'src/utils/record-id-generator/record-id-generator.service';
 import { CategoryService } from 'src/category/category.service';
 import { InventoryService } from 'src/inventory/inventory.service';
@@ -18,6 +18,7 @@ import { plainToInstance } from 'class-transformer';
 import { CreateInventoryDto } from 'src/inventory/dto/create-inventory.dto';
 import { ProductMetadataService } from './products-metadata/product-metadata.service';
 import { UpdateProductMetaData } from './products-metadata/dto/update-product-metadata.dto';
+import { CreateProductMetaData } from './products-metadata/dto/create-product-metadata.dto';
 
 @Injectable()
 export class ProductsService {
@@ -56,7 +57,7 @@ export class ProductsService {
 
       //Metadata Creation
       if(createProductDto["sizes"] || createProductDto["color"] || createProductDto["imageUrl"]){
-        const metadataObj = {
+        const metadataObj:CreateProductMetaData= {
           sizes: createProductDto["sizes"],
           color: createProductDto["color"],
           imageUrl: createProductDto["imageUrl"]
@@ -89,6 +90,27 @@ export class ProductsService {
       /**@logger */
       this.loggerService.error(fetchErr.message);
       throw new InternalServerErrorException('Error while fetching products');
+    }
+  }
+
+  async findManyIn(...productIds:string[]){
+    try {
+      /**@logger */
+      this.loggerService.log('Fetching products in many operation....');
+      const foundProducts = await this.productRepsitory.find({
+        where:{
+          productId: In(productIds)
+        }
+      })
+      if(!foundProducts){
+        throw new BadRequestException("Products could not be found");
+      }
+      return foundProducts;
+    } catch (fetchErr) {
+      /**@logger */
+      this.loggerService.error(fetchErr);
+      if (fetchErr instanceof BadRequestException) throw fetchErr;
+      throw new InternalServerErrorException('Error while trying to fetch products');
     }
   }
 
@@ -164,9 +186,7 @@ export class ProductsService {
     try {
       /**@logger */
       this.loggerService.log('Deleting product...');
-      const deletedProduct = await this.productRepsitory.delete({
-        productId: id,
-      });
+      const deletedProduct = await this.productRepsitory.softDelete(id);
       return deletedProduct;
     } catch (deleteErr) {
       /**@logger */
@@ -177,5 +197,21 @@ export class ProductsService {
 
   async saveProduct(product:Product){
     return this.productRepsitory.save(product);
+  }
+
+
+  async findWithRelations(options?:FindManyOptions<Product>){
+    try {
+      /**@logger */
+      this.loggerService.log('fetching products with relation');
+      const products = await this.productRepsitory.find(options);
+      if(!products) throw new BadRequestException('Product|s does not exist');
+      return products
+    } catch (fetchErr) {
+      /**@logger */
+      this.loggerService.error(fetchErr.message);
+      if(fetchErr instanceof BadRequestException) throw fetchErr;
+      throw new InternalServerErrorException('Error while fetching products')
+    }
   }
 }

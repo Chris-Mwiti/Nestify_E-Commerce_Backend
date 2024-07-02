@@ -7,5 +7,9 @@ export class SizesMetaData {
 
     @Min(0)
     @IsNumber()
+    quantity:number;
+
+    @Min(0)
+    @IsNumber()
     price:number;
 }

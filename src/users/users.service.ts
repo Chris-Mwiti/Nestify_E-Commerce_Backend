@@ -114,9 +114,7 @@ export class UsersService {
     this.loggerService.log('Deleting user...', {
       label: UsersService.name,
     });
-    const removeResult = await this.userRepository.delete({
-      userId: id,
-    });
+    const removeResult = await this.userRepository.softDelete(id);
     if (!removeResult) throw new BadRequestException('User does exist');
     return removeResult;
   }

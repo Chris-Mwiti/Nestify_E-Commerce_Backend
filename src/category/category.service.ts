@@ -8,7 +8,7 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 import { CustomLoggerService } from 'src/utils/custom-logger/custom-logger.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from './entities/category.entity';
-import { Repository, TreeRepository } from 'typeorm';
+import { In, Repository, TreeRepository } from 'typeorm';
 import { RecordIdGeneratorService } from 'src/utils/record-id-generator/record-id-generator.service';
 
 @Injectable()
@@ -159,9 +159,7 @@ export class CategoryService {
        * @logger
        */
       this.loggerService.log('Removing category...');
-      const removedCategory = this.categoryRepository.delete({
-        categoryId: id,
-      });
+      const removedCategory = this.categoryRepository.softDelete(id)
       return removedCategory;
     } catch (updateErr) {
       /**
@@ -256,9 +254,10 @@ export class CategoryService {
         select: ['parent'],
       });
 
+      if(!categoryAncestors.parent) return {};
+
       if (formatTree) return categoryAncestors;
 
-      if(!categoryAncestors.parent) return {};
       return categoryAncestors.parent.categoryName;
     } catch (fetchErr) {
       /**@logger */
@@ -267,5 +266,24 @@ export class CategoryService {
         'Error while fetching ancestors tree',
       );
     }
+  }
+
+  async findCategoriesIn(...categoryIds:string[]){
+      try {
+        /**@logger */
+        this.loggerService.log('Fetching In categories')
+        const categories = await this.categoryRepository.find({
+          where:{
+            categoryId: In(categoryIds)
+          }
+        })
+        if (!categories) throw new BadRequestException('Categories not found');
+        return categories;
+      } catch (fetchErr) {
+        /**@logger */
+        this.loggerService.error(fetchErr.message);
+        if(fetchErr instanceof BadRequestException) throw fetchErr;
+        throw new InternalServerErrorException('Error while fetching categories')
+      }
   }
 }

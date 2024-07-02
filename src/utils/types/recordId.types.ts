@@ -7,6 +7,7 @@ export type TRecordIdsPrefixes =
   | 'INVENTORY'
   | 'DISCOUNT'
   | 'SESSION'
+  | 'COLLECTION'
   | 'CART_ITEM'
   | 'ORDER_DETAIL'
   | 'ORDER_ITEM'

@@ -19,6 +19,18 @@ import { AllFilter } from './utils/ExceptionFilters/all/all.filter';
 import { InventoryModule } from './inventory/inventory.module';
 import { Inventory } from './inventory/entities/inventory.entity';
 import { ProductMetadata } from './products/products-metadata/entities/product-metadata.entity';
+import { OrdersModule } from './orders/orders.module';
+import { PaymentModule } from './payment/payment.module';
+import { ShippingModule } from './shipping/shipping.module';
+import { SalesModule } from './sales/sales.module';
+import { RefundsModule } from './refunds/refunds.module';
+import { AnalyticsModule } from './analytics/analytics.module';
+import OrderItems from './orders/order-items/entities/order-items.entities';
+import { Order } from './orders/entities/order.entity';
+import { Payment } from './payment/entities/payment.entity';
+import { Shipping } from './shipping/entities/shipping.entity';
+import { CollectionsModule } from './collections/collections.module';
+import { Collection } from './collections/entities/collection.entity';
 
 @Module({
   imports: [
@@ -34,8 +46,8 @@ import { ProductMetadata } from './products/products-metadata/entities/product-m
       username: 'root',
       password: '',
       database: 'ecommerce_db',
-      entities: [User,Category,Product,Inventory, ProductMetadata],
-      synchronize: false,
+      entities: [User,Category,Product,Inventory, ProductMetadata, OrderItems,Order,Payment,Shipping, Collection],
+      synchronize: true,
       logging: true,
     }),
     ConfigModule.forRoot({
@@ -47,6 +59,13 @@ import { ProductMetadata } from './products/products-metadata/entities/product-m
     CategoryModule,
     ProductsModule,
     InventoryModule,
+    OrdersModule,
+    PaymentModule,
+    ShippingModule,
+    SalesModule,
+    RefundsModule,
+    AnalyticsModule,
+    CollectionsModule,
   ],
   controllers: [AppController],
   providers: [

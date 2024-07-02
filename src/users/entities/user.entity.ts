@@ -1,5 +1,6 @@
+import { Order } from "src/orders/entities/order.entity";
 import { TimeStamp } from "src/utils/entities/timestamp.entities";
-import { Column, CreateDateColumn, Entity, PrimaryColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, PrimaryColumn, UpdateDateColumn } from "typeorm";
 
 export enum UserStatus {
   active = "active",
@@ -65,6 +66,13 @@ export class User extends TimeStamp{
         default: UserStatus.active
     })
     status: UserStatus
+
+    @DeleteDateColumn()
+    deletedAt:Date
+
+    /**@relations */
+    @OneToMany(type => Order, (order) => order.user, {nullable: true, cascade: true})
+    orders?:Order[]
 }
 
 type TUser = typeof User
